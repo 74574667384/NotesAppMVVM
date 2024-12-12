@@ -1,14 +1,11 @@
 package com.example.notesmvvm
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,13 +13,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notesmvvm.navigation.NotesNavHost
 import com.example.notesmvvm.ui.theme.NotesMVVMTheme
 
@@ -33,27 +30,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             NotesMVVMTheme {
+                val context = LocalContext.current
+                val mViewModel: MainViewModel = viewModel(factory = MainViewModelFactory(context.applicationContext as Application))
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            colors = TopAppBarDefaults.smallTopAppBarColors(
-                                scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-                                containerColor = Color.Blue,
-                                titleContentColor = Color.White,
-                            ),
                             title = {
                                 Text(text = "Notes MVVM")
-                            }
-                        )
-                    },
-                    content = {
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Blue,
+                                titleContentColor = Color.White
+                            )
+                        )},
+                    content = { innerPadding ->
                         Surface(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.padding(innerPadding),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            NotesNavHost()
+                            NotesNavHost(mViewModel)
                         }
-
                     }
                 )
             }
